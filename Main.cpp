@@ -1,4 +1,6 @@
 #include "MainComponent.h"
+#include "TestClockListener.h"
+#include "Clock.h"
 
 //==============================================================================
 class GuiAppApplication  : public juce::JUCEApplication
@@ -11,6 +13,9 @@ public:
     const juce::String getApplicationVersion() override    { return JUCE_APPLICATION_VERSION_STRING; }
     bool moreThanOneInstanceAllowed() override             { return true; }
 
+    Clock *clock;
+    TestClockListener *listener;
+
     //==============================================================================
     void initialise (const juce::String& commandLine) override
     {
@@ -18,12 +23,19 @@ public:
         juce::ignoreUnused (commandLine);
 
         mainWindow.reset (new MainWindow (getApplicationName()));
+
+        clock = new Clock(240, 24);
+        listener = new TestClockListener();
+        clock->addActionListener(listener);
+        clock->startClock();
+
     }
 
     void shutdown() override
     {
         // Add your application's shutdown code here..
-
+        delete clock;
+        delete listener;
         mainWindow = nullptr; // (deletes our window)
     }
 
